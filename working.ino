@@ -4,13 +4,14 @@
 #include <Thread.h>
 
 Thread soundThread = Thread();
+Thread ledThread = Thread();
 
 int PIR = 6;
 int redLed = 5;
 int bluLed = 4;
 int grnLed = 3;
 int soundPin = 8;
-double timer = millis();
+double timer;
 bool email = false;
 bool phone = false;
 bool led1 = false;
@@ -29,7 +30,8 @@ const char *mqtt_pass = "xxxxxxxxx"; // Пароль для подключени
 const char* mqtt_topics[] = {"devices/1/phone/", "devices/1/email/", 
                              "devices/1/led1/", "devices/1/sound/", 
                            "devices/1/pir1/", "devices/1/timetokill/phone/", 
-                      "devices/1/timetokill/email/", "devices/1/stopalarm/"};
+                      "devices/1/timetokill/email/", "devices/1/stopalarm/",
+			    "devices/1/timetokill/sms/", "devices/1/situation/"};
 
 WiFiClient wclient; 
 
@@ -44,6 +46,7 @@ void setup()
   pir1 = 1;
   led1 = 1;
   sound = 1;
+  timer = millis();
   soundThread.onRun(playmelody);     // назначаем потоку задачу
   soundThread.setInterval(20); 
   ledThread.onRun(ledBlink);  // назначаем потоку задачу
@@ -133,16 +136,12 @@ void loop()
       }
     if (client.connected()){
   client.loop();}
-  if (pir1){working();}    // считываем значение 
-  if (pir1)
-  {
-    working();
-  }
+  if (pir1){working();}   
 }
 
 void working()
 {
-  digitalWrite(bluLed, HIGH);
+  digitalWrite(bluLed, 1);
   if (digitalRead(PIR)==1)
   {
     if (led1)
@@ -160,10 +159,8 @@ void working()
         break;
       }      
     }
-    Serial.println("Nh!");
-    if (email){
-      client.publish("devices/1/timetokill/email/", "Проникновение в Бэт-Пещеру из главного входа");}
+    if (email){client.publish("devices/1/timetokill/email/", "Проникновение в Бэт-Пещеру из главного входа");}
     if (sms){client.publish("devices/1/timetokill/sms/", "Проникновение в Бэт-Пещеру из главного входа");}
-    if (phone) {client.publish("Проникновение в Бэт-Пещеру из главного входа");}
+    if (phone) {client.publish("devices/1/timetokill/phone/","Проникновение в Бэт-Пещеру из главного входа");}
   }
 }
