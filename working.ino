@@ -6,11 +6,11 @@
 Thread soundThread = Thread();
 Thread ledThread = Thread();
  
-int PIR = 6;
-int redLed = 5;
-int bluLed = 4;
-int grnLed = 3;
-int soundPin = 8;
+int PIR = 5;
+int redLed = 16;
+int bluLed = 14;
+int grnLed = 12;
+int soundPin = 13;
 double timer;
 bool email = false;
 bool phone = false;
@@ -132,8 +132,8 @@ void working()
     }
     if (sound){soundThread.run();}
     client.publish("devices/1/situation", "Main Enter detected!");
-    double currentTime = timer;
-    while(timer-currentTime<10)
+    double currentTime = millis();
+    while(millis()-currentTime<10)
     {
       if (stopalarm)
       {
