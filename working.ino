@@ -113,12 +113,14 @@ void playmelody()
     else {  // по достижении 500 Гц
         ton = 100;  // сбрасываем тональность до 100 Гц
     }
+    Serial.println("SOUND WORKS!")
 }
  
 void ledBlink() {
     static bool ledStatus = false;    // состояние светодиода Вкл/Выкл
     ledStatus = !ledStatus;           // инвертируем состояние
     digitalWrite(redLed, ledStatus);  // включаем/выключаем светодиод
+    Serial.println("LED WORKS")
 }
 
 void working()
@@ -141,9 +143,12 @@ void working()
         break;
       }      
     }
-    if (email){client.publish("devices/1/timetokill/email/", "Проникновение в Бэт-Пещеру из главного входа");}
-    if (sms){client.publish("devices/1/timetokill/sms/", "Проникновение в Бэт-Пещеру из главного входа");}
-    if (phone) {client.publish("devices/1/timetokill/phone/","Проникновение в Бэт-Пещеру из главного входа");}
+    if (email){client.publish("devices/1/timetokill/email/", "Проникновение в Бэт-Пещеру из главного входа");
+              Serial.println("devices/1/timetokill/email/, Проникновение в Бэт-Пещеру из главного входа");}
+    if (sms){client.publish("devices/1/timetokill/sms/", "Проникновение в Бэт-Пещеру из главного входа");
+            Serial.println("devices/1/timetokill/sms/, Проникновение в Бэт-Пещеру из главного входа");}
+    if (phone) {client.publish("devices/1/timetokill/phone/","Проникновение в Бэт-Пещеру из главного входа");
+               Serial.println("devices/1/timetokill/phone/, Проникновение в Бэт-Пещеру из главного входа");}
   }
  }
 void loop()
