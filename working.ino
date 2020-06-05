@@ -6,8 +6,8 @@
 Thread soundThread = Thread();
 Thread ledThread = Thread();
  
-int PIR = 5;
-int redLed = 16;
+int PIR = 16;
+int redLed = 15;
 int bluLed = 14;
 int grnLed = 12;
 int soundPin = 13;
@@ -20,13 +20,13 @@ bool sound = false;
 bool sms = false;
 bool stopalarm = 1;
 byte sa = 1;
-const char *ssid = "xxxxxxxxx"; // Имя роутера
-const char *pass = "xxxxxxxxx"; // Пароль роутера
+const char *ssid = "WiFi-DOM.ru-0494"; // Имя роутера
+const char *pass = "xkfJDmMN28"; // Пароль роутера
  
-const char *mqtt_server = "xxxxxxxxx"; // Имя сервера MQTT
-const int mqtt_port = 1883; // Порт для подключения к серверу MQTT
-const char *mqtt_user = "xxxxxxxxx"; // Логи для подключения к серверу MQTT
-const char *mqtt_pass = "xxxxxxxxx"; // Пароль для подключения к серверу MQTT
+const char *mqtt_server = "tailor.cloudmqtt.com"; // Имя сервера MQTT
+const int mqtt_port = 12878; // Порт для подключения к серверу MQTT
+const char *mqtt_user = "pyhyvrkj"; // Логи для подключения к серверу MQTT
+const char *mqtt_pass = "yc_uB67FT97v"; // Пароль для подключения к серверу MQTT
 const char* mqtt_topics[] = {"devices/1/phone/", "devices/1/email/",
                              "devices/1/led1/", "devices/1/sound/",
                            "devices/1/pir1/", "devices/1/timetokill/phone/",
@@ -42,7 +42,7 @@ void setup()
   pinMode(redLed, OUTPUT);
   pinMode(grnLed, OUTPUT);
   pinMode(bluLed, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(115200);
   pir1 = 1;
   led1 = 1;
   sound = 1;
@@ -58,18 +58,18 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print(topic);
   Serial.println("]");
    if(strcmp(topic, "devices/1/phone/")==0){
-   phone = int(payload);}
+   phone = convertFromPayload(payload, length);}
    if(strcmp(topic, "devices/1/email/")==0){
-   email = int(payload);}
+   email = convertFromPayload(payload, length);}
    if(strcmp(topic, "devices/1/led1/")==0){
-     led1 = int(payload);}
+     led1 = convertFromPayload(payload, length);}
    if(strcmp(topic, "devices/1/sound/")==0){
-   sound = int(payload);}
+   sound = convertFromPayload(payload, length);}
    if(strcmp(topic, "devices/1/pir1/")==0){
-    pir1 = int(payload);}
+    pir1 = convertFromPayload(payload, length);}
     if(strcmp(topic, "devices/1/stopalarm/")==0){
-     stopalarm = int(payload);}
-  Serial.println();
+     stopalarm = convertFromPayload(payload, length);}
+  Serial.println(*(int*)payload);
 }
  
 PubSubClient client(mqtt_server, mqtt_port, callback, wclient);
@@ -77,6 +77,14 @@ PubSubClient client(mqtt_server, mqtt_port, callback, wclient);
 void subscribeToAllTopics(){
   for(int i=0;i<(sizeof(mqtt_topics)/sizeof(*mqtt_topics));i++)
     client.subscribe(mqtt_topics[i]);
+}
+
+int convertFromPayload(byte* payload, unsigned int length){
+  char buf[length];
+  for(int i=0;i<length;i++)
+    buf[i] = (char) payload[i];
+  String value = String(buf);
+  return value.toInt();
 }
  
 void connectToWiFi(){
@@ -113,16 +121,17 @@ void playmelody()
     else {  // по достижении 500 Гц
         ton = 100;  // сбрасываем тональность до 100 Гц
     }
-    Serial.println("SOUND WORKS!")
+    noTone(soundPin);
+//    Serial.println("SOUND WORKS!");
 }
  
 void ledBlink() {
     static bool ledStatus = false;    // состояние светодиода Вкл/Выкл
     ledStatus = !ledStatus;           // инвертируем состояние
     digitalWrite(redLed, ledStatus);  // включаем/выключаем светодиод
-    Serial.println("LED WORKS")
+//    Serial.println("LED WORKS");
 }
-
+ 
 void working()
 {
   digitalWrite(bluLed, 1);
